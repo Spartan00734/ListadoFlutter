@@ -32,11 +32,20 @@ class _HomeState extends State<Home> {
     Persona('Diogom', 'Moran', '20184568'),
   ];
 
-  // Método para agregar una persona a la lista
-  void _agregarPersona() {
-    setState(() {
-      _personas.add(Persona('Nuevo', 'Usuario', '00000000'));
-    });
+  // Navega a la pantalla para agregar una nueva persona
+  void _agregarPersona(BuildContext context) async {
+    final nuevaPersona = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AgregarPersonaScreen(),
+      ),
+    );
+
+    if (nuevaPersona != null) {
+      setState(() {
+        _personas.add(nuevaPersona); // Agrega la nueva persona
+      });
+    }
   }
 
   // Método para eliminar una persona con confirmación
@@ -76,7 +85,7 @@ class _HomeState extends State<Home> {
         title: const Text('Mi primera chambaaaa'),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _agregarPersona,
+        onPressed: () => _agregarPersona(context), // Navega al formulario
         child: const Icon(Icons.people_alt_outlined),
         backgroundColor: Colors.green,
       ),
@@ -102,6 +111,56 @@ class _HomeState extends State<Home> {
   }
 }
 
+// Nueva pantalla para agregar persona
+class AgregarPersonaScreen extends StatelessWidget {
+  final _nombreController = TextEditingController();
+  final _apellidoController = TextEditingController();
+  final _cuentaController = TextEditingController();
+
+  AgregarPersonaScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Agregar Persona'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _nombreController,
+              decoration: const InputDecoration(labelText: 'Nombre'),
+            ),
+            TextField(
+              controller: _apellidoController,
+              decoration: const InputDecoration(labelText: 'Apellido'),
+            ),
+            TextField(
+              controller: _cuentaController,
+              decoration: const InputDecoration(labelText: 'Cuenta'),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // Crear una nueva persona y regresar a la pantalla anterior
+                final nuevaPersona = Persona(
+                  _nombreController.text,
+                  _apellidoController.text,
+                  _cuentaController.text,
+                );
+                Navigator.of(context).pop(nuevaPersona); // Devuelve la nueva persona
+              },
+              child: const Text('Agregar'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class Persona {
   String name;
   String lastName;
@@ -109,3 +168,4 @@ class Persona {
 
   Persona(this.name, this.lastName, this.cuenta);
 }
+
